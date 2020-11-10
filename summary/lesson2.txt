@@ -1,0 +1,114 @@
+Lesson 2:
+Spring Boot JPA (Hibernate): добавляем базу данных в веб приложение на Java
+
+1. Добавили зависимости
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+2. Создали application.properties:
+
+spring.datasource.url=jdbc:postgresql://localhost/sweater
+spring.datasource.username=postgres
+spring.datasource.password=password
+spring.jpa.generate-ddl=true
+
+spring.jpa.generate-ddl=true - это значит, что спринг создаст структуру БД
+
+3. Создали ентити-класс, на основе которого сгенерируется таблица в бд:
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Message {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Integer id;
+
+    private String text;
+    private String tag;
+
+    public Message() {
+    }
+
+    public Message(String text, String tag) {
+        this.text = text;
+        this.tag = tag;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+}
+
+4. Получить в шаблоне мусташ лист элементов:
+Мы передаем в Map<String, Object> model лист Message.
+
+@GetMapping
+    public String main(Map<String, Object> model) {
+        Iterable<Message> messages = messageRepo.findAll();
+        model.put("messages", messages);
+        return "main";
+    }
+
+А в html- форме выводим уже поля каждого Message
+{{#messages}}
+    <div>
+        <b>{{id}}</b>
+        <span>{{text}}</span>
+        <i>{{tag}}</i>
+    </div>
+{{/messages}}
+
+
+Добавили форму, для добавления мессаджей пользователем. Пользователь вводить поля: text и tag.
+<form method="post" action="/"> - при нажатии  submit, форма будет обрабатываться post-запросом по урл http://localhost:8080/
+
+<body>
+<div>
+     <form method="post" action="/">
+        <input type="text" name="text"  placeholder="Введите сообщение">
+        <input type="text" name="tag"   placeholder="Тэг">
+        <button type="submit">Добавить</button>
+    </form></div>
+
+<div>Список сообщений</div>
+{{#messages}}
+    <div>
+        <b>{{id}}</b>
+        <span>{{text}}</span>
+        <i>{{tag}}</i>
+    </div>
+{{/messages}}
+</body>
+</html>
