@@ -6,7 +6,6 @@ Spring Boot JPA (Hibernate): добавляем базу данных в веб 
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -18,8 +17,6 @@ Spring Boot JPA (Hibernate): добавляем базу данных в веб 
 spring.datasource.url=jdbc:postgresql://localhost/sweater
 spring.datasource.username=postgres
 spring.datasource.password=password
-spring.jpa.generate-ddl=true
-
 spring.jpa.generate-ddl=true - это значит, что спринг создаст структуру БД
 
 3. Создали ентити-класс, на основе которого сгенерируется таблица в бд:

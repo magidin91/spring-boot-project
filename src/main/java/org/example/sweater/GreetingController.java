@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,28 +20,24 @@ public class GreetingController {
         this.messageRepo = messageRepo;
     }
 
-    @GetMapping("/greeting")
-    public String greeting(
-            @RequestParam(name = "name", required = false, defaultValue = "World") String name,
-            Map<String, Object> model
-    ) {
-        model.put("name", name);
+    @GetMapping("/")
+    public String greeting(Map<String, Object> model) {
         return "greeting";
     }
 
-    @GetMapping
+    @GetMapping("/main")
     public String main(Map<String, Object> model) {
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
         return "main";
     }
 
-    @PostMapping
+    @PostMapping("/main")
     public String add(@RequestParam String text, @RequestParam String tag, Map<String, Object> model) {
         Message message = new Message(text, tag);
         messageRepo.save(message);
 
-        /* добавили в модель теущие сообщения и снова вернули шаблон main*/
+        /* добавили в модель текущие сообщения и снова вернули шаблон main*/
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
 
@@ -52,9 +46,11 @@ public class GreetingController {
 
     @PostMapping("filter")
     public String filter(@RequestParam String tag, Map<String, Object> model) {
-        List<Message> messages = new ArrayList<>();
+        Iterable<Message> messages;
         if (tag != null && !tag.isBlank()) {
             messages = messageRepo.findByTag(tag);
+        } else {
+            messages = messageRepo.findAll();
         }
 
         model.put("messages", messages);

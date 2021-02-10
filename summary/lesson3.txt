@@ -1,0 +1,105 @@
+https://spring.io/guides/gs/securing-web/
+1. Добавили конфигурацию нашего веб-слоя:
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class MvcConfig implements WebMvcConfigurer {
+
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/checker").setViewName("checker");
+		registry.addViewController("/login").setViewName("login");
+	}
+}
+
++ registry.addViewController("/home").setViewName("home"); - можно просто к маппингу привязать какой-то шаблон без логики.
+Т.е. в этом случае нам не нужен контроллер.
+
+2. Добавили dependency:
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+3. Добавили конфиг для веб-секьюрити.
+При старте он конфигурирует веб-секьюрити, в метод configure передается объект HttpSecurity, который настраивается последющими методами.
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.authorizeRequests() // включаем авторизацию
+				.antMatchers("/", "/home").permitAll() // по этому пути разрешаем полный доступ
+				.anyRequest().authenticated() // для остальных запросов требуется авторизация
+			.and()
+			    .formLogin()
+				.loginPage("/login")
+				.permitAll() // разрешаем логином пользоватсья всем
+			.and()
+			    .logout()
+				.permitAll(); // разрешаем логаутом пользоваться всем
+	}
+
+	@Bean
+	@Override
+	public UserDetailsService userDetailsService() {
+		UserDetails user =
+			 User.withDefaultPasswordEncoder()
+				.username("user")
+				.password("password")
+				.roles("USER")
+				.build();
+
+		return new InMemoryUserDetailsManager(user); // создает менеджер, который обслуживает учетные записи
+		// создает пользователя "user" + "password" в памяти приложения при каждом запуске (без использования БД).
+	}
+}
+
+4. Добавили страницу логина:
+
+ <!DOCTYPE html>
+ <html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+     <title>Spring Security Example </title>
+ </head>
+ <body>
+ <form action="@{/login}" method="post">
+     <div><label> User Name : <input type="text" name="username"/> </label></div>
+     <div><label> Password: <input type="password" name="password"/> </label></div>
+     <div><input type="submit" value="Sign In"/></div>
+ </form>
+ </body>
+ </html>
+
+5. Добавили на страницу main форму логаута:
+ <div>
+        <form action="/logout" method="post">
+            <input type="submit" value="Sign Out"/>
+        </form>
+ </div>
+
+6. Нам нужно добавить в пропертис:
+spring.mustache.expose-request-attributes=true - он включает дополнительные атрибуты (которые можно через контроллер передавать в шаблон) для мусташ.
+
+7. Мы используем шаблонизатор mustache, поэтому у нас не будет автоматического пробрасывания csrf.
+csrf позволяет отправлять на ваш сервер данные только тем страницам и коду, у которых есть токен csrf выданный сервером.
+В случае с thymeleaf спринг делает это автоматически.
+
+объявляем невидимое поле в шаблоне логина (добавляем токен для каждой формы):
+<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+
+Нужно добавить это поле во все формы, иначе эти формы(запросы) будут игнорироваться.
+
+8. fetch = FetchType.LAZY - Hibernate загрузит роли, только когда пользователь обратится к полю roles
+   fetch = FetchType.EAGER - Hibernate при запросе пользователя сразу подгрузит все его роли
+
+   EAGER - хорош, когда мало данных, это ускоряет работу, но потребляет больше памяти.
+   LAZY - хорош, когда записи нужно подгружать по мере необходимости.
+Например, у нас есть класс "институт" и поле студенты, которое содержит тысячи записей, соответственно, нам выгоднее
+подгружать записи студнетов, только когда идет обращение к этому полю. Соответственно система будет более легковесна,
+будет занимать меньше памяти, но при обращении к полю потребуется некоторое время, чтобы хибер подгрузил записи.
+

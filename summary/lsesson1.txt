@@ -1,55 +1,47 @@
-Добавили основные зависимости, создали простой контроллер. Использовали 2 шаблонизатора: таймлиф и мусташ.
+https://www.youtube.com/watch?v=jH17YkBTpI4&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2XRO&index=1
 
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.example</groupId>
-    <artifactId>spring-boot-project</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.2.RELEASE</version>
-    </parent>
-
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
+1. Добавили основные зависимости, создали простой контроллер. Использовали 2 шаблонизатора: таймлиф и мусташ.
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
         <!--  шаблонизатор thymeleaf -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+
         <!--  шаблонизатор thymeleaf mustache -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mustache</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+Добавил плагин для Mustache, чтобы определялся тип файла
 
-</project>
+2. Если мы хотим передать параметры в таймлиф:
+
+@GetMapping("/main")
+public String main(Model model) {
+        model.addAttribute("name", name);
+        return "main";
+    }
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p th:text="'Hello, ' + ${name} + '!'" />
+</body>
+</html>
+
+3. Если мы хотим передать параметры в мусташ:
+
+    @GetMapping("/main")
+    public String main(Map<String, Object> model) {
+        Iterable<Message> messages = messageRepo.findAll();
+        model.put("messages", messages);
+        return "main";
+    }
+4.  Руководство по mustache:
+http://mustache.github.io/mustache.5.html
