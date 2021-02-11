@@ -1,4 +1,4 @@
-package org.example.sweater;
+package org.example.sweater.controller;
 
 import org.example.sweater.entity.Message;
 import org.example.sweater.repository.MessageRepo;
@@ -13,10 +13,10 @@ import java.util.Map;
  * GreetingController by Mustache
  */
 @Controller
-public class GreetingController {
+public class MainController {
     final MessageRepo messageRepo;
 
-    public GreetingController(MessageRepo messageRepo) {
+    public MainController(MessageRepo messageRepo) {
         this.messageRepo = messageRepo;
     }
 

@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * В классе указываются контроллеры, в которых нет логики, для которых нужно просто вернуть шаблон по заданному пути
+ * В классе указываются контроллеры, в которых нет логики, для которых нужно вернуть только шаблон по заданному пути
  */
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
