@@ -1,0 +1,12 @@
+Spring Boot Freemarker: подключаем шаблонизатор Freemarker
+
+1. Заменяем мутсаш на фримаркет
+2.
+<form method="get" action="/main">
+    <!-- value="$.{tag!}" - чтобы тег отображался после поиска -->
+    <input type="text" name="tag" value="${tag!}">
+    <button type="submit">Найти по тэгу</button>
+</form>
+
+В этом случае мы получаем значение из мейнкотроллера "get" action="/main", и соответственно оно отображается в
+поле ввода value="${tag!}">
