@@ -3,8 +3,8 @@
 <@c.page>
 <div>
     <@l.logout/>
+    <span><a href="/user">User list</a></span>
 </div>
-
 <!-- форма для ввода сообщений -->
 <div>
     <form method="post" action="/main">
