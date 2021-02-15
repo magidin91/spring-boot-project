@@ -3,6 +3,7 @@
 <@c.page>
 Add new user
 <@l.login "/registration" "Sign up"/>
-<!-- вставка переменной message во фримаркере -->
-${message}
+<!-- ${message?ifExists}, используется, чтобы не получать ошибку,
+когда не передаем в модель переменную message (пр. @GetMapping("registration")) -->
+${message?ifExists}
 </@c.page>

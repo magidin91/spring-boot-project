@@ -109,3 +109,10 @@ public class Message {
 {{/messages}}
 </body>
 </html>
+
+5.   @AuthenticationPrincipal User user - получаем аутентифицированного юзера, кот-й делает запрос
+
+       @PostMapping("/main")
+       public String add(@AuthenticationPrincipal User user,
+                         @RequestParam String text,
+                         @RequestParam String tag, Map<String, Object> model) {

@@ -1,0 +1,105 @@
+Spring Boot MVC:
+- Как загружать файлы (изображения) и вывводит их
+- Как использовать статические файлы типа Css, например, используя файл Css, применить ег ок страницам.
+
+0. ("classpath:/static/"); - спринг будет искать от корня проекта вниз по иерархии
+
+1. Гайд по загрузке файлов
+https://spring.io/guides/gs/uploading-files/
+
+2.
+${message?ifExists}, используется, чтобы не получать ошибку,
+когда мы не передаем в модель переменную message (пр. @GetMapping("registration"))
+
+3. в application.properties:
+upload.path=/C:/Users/Misha/Folder out/sweater - директория для хранения файла на жестком диске
+
+Чтобы затем получить эту переменную в приложении используем:
+@Value("${upload.path}")
+private String uploadPath;
+
+4. Форма для загрузки файла:
+В форму добавили поле для загрузки файла: <input type="file" name="file">.
+Также добавили enctype="multipart/form-data"
+<form method="post" action="/main" enctype="multipart/form-data">
+        <input type="text" name="text" placeholder="Введите сообщение" />
+        <input type="text" name="tag" placeholder="Введите тэг">
+        <input type="file" name="file">
+        <input type="hidden" name="_csrf" value="${_csrf.token}" />
+        <button type="submit">Добавить</button>
+</form>
+
+- enctype="multipart/form-data":
+Определяет способ кодирования данных формы при их отправке на сервер.
+Обычно устанавливать значение атрибута enctype не требуется, данные вполне правильно понимаются на стороне сервера.
+Однако если используется поле для отправки файла (input type="file"), следует определить атрибут enctype как multipart/form-data.
+
+multipart/form-data
+Данные не кодируются. Это значение применяется при отправке файлов.
+http://htmlbook.ru/html/form/enctype
+
+5.  Если добавляем блок <div> </div>, то он будет на следующей строке.
+7.
+String uuidFile = UUID.randomUUID().toString();
+Static factory to retrieve a type 4 (pseudo randomly generated) UUID.
+- получаем 4 псевдорандомных числа, испольщуется для создания имен файлов
+
+String resultFilename = uuidFile + "." + file.getOriginalFilename();
+file.getOriginalFilename() - оригинальное название файла,апример имя с комп-ра
+
+8. создаем new File и передаем в него полученный MultipartFile file из формы
+
+file.transferTo(new File(uploadPath + "/" + resultFilename));
+
+9. <img src="/img/${message.filename}">
+
+Тег <img> предназначен для отображения на веб-странице изображений в графическом формате GIF, JPEG или PNG.
+Адрес файла с картинкой задаётся через атрибут src (например урл адрес).
+
+(Если необходимо, то рисунок можно сделать ссылкой на другой файл, поместив тег <img> в контейнер <a>)
+
+10. Перенаправление пути в MvcConfig.
+Здесь мы использовали перенаправление с урл на другой путь.
+
+- Это значит все запросы по урл "/img/**" будут перенаправляться по пути "file://" + uploadPath + "/".
+Причем, к пути дл перенаправления такде будет добавлен ${message.filename}, т.е. мы получим полный путь до файла.
+"file://" - указывает, что перенаправляем на файловую систему.
+
+registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/"); - перенаправление с урл "/static/**"
+ на"classpath:/static/" - это значит, что поиск папки static будет происходить от корня проекта и дальше по иерархии.
+
+@Configuration
+public class MvcConfig implements WebMvcConfigurer {
+	@Value("${upload.path}")
+	private String uploadPath;
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/img/**")
+				.addResourceLocations("file://" + uploadPath + "/");
+		registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+	}
+}
+
+
+11. Как раздавать статические файлы, например,  CSS или JavaScript:
+Добавили ссылку на файл стлей css в head, он будет применяться для всех страниц с этим <head>.
+<head>
+    <meta charset="UTF-8">
+    <title>Sweater</title>
+    <#-- используем ссылку на стиль -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
++ как написано выше доабвили перенаправление с маппинга на classpath
+registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+
+12.
+<div>
+        <#if message.filename??>
+            <img src="/img/${message.filename}">
+        </#if>
+</div>
+
+message.filename?? - приведение булеан, т.е. если значение есть, то тру.
