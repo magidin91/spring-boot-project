@@ -1,0 +1,119 @@
+Spring Boot: оформляем UI с Bootstrap
+
+Bootstrap - самый популярный в мире набор инструментов с открытым исходным кодом, включающий переменные Sass и миксины,
+адаптивную систему сеток и множество готовых компонентов и плагинов JavaScript.
+
+1. Добавили бутстрап в проект
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <#-- сообщаем браузеру, что он должен учитывать плотность пикселей на устройстве content="width=device-width -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- подключаем стили Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+              crossorigin="anonymous">
+    </head>
+    <body>
+
+  <!-- блоки подключения джаваскрипта -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    </body>
+    </html>
+
+2. Панель навигации:
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+
+http://htmlbook.ru/html/ul
+Тег <ul> устанавливает маркированный список. Каждый элемент списка должен начинаться с тега <li>.
+Если к тегу <ul> применяется таблица стилей, то элементы <li> наследуют эти свойства.
+
+!!! Чтобы затем вставить куда-то панель навигации - <#include "navbar.ftlh"> "navbar.ftlh" - путь к файлу.
+3.  <h5>Hello, guest</h5> - заголовок
+4. Отступы: https://getbootstrap.com/docs/4.1/utilities/spacing/
+
+{property}{sides}-{size}
+property: margin или padding
+sides - сторона от кот-ой отступ
+size -рзамер отступа
+
+Пример: используем отступ сверху на 5 единиц (margin top 5 или mt-5) для нашего контейнера (сетки)
+<div class="container mt-5">
+    <#-- <#nested>- секция, которая определяет, куда вставляется вложенный код -->
+    <#nested>
+</div>
+
+ <div class="m-2"> - отступ со всех сторон на 2
+  <div class="card my-3"> - отступ сверху и снизу на 3
+
+5. Определение переменных в шаблоне фримаркера
+Мы можем определить в одном шаблоне переменные: <#assign a=value1, b=value2>, например в "security.ftlh",
+а затем использовать их в любом шаблоне через <#include "security.ftlh">
+
+<#assign
+<#-- обявили переменную known, положили в нее проверку существования Session.SPRING_SECURITY_CONTEXT?? -->
+known = Session.SPRING_SECURITY_CONTEXT??
+>
+
+<#if known>
+    <#assign
+        <#-- аутентифицрованный пользователь -->
+    user = Session.SPRING_SECURITY_CONTEXT.authentication.principal
+    name = user.getUsername()
+    isAdmin = user.isAdmin()
+    >
+<#else>
+    <#assign
+    name = "unknown"
+    isAdmin = false
+    >
+</#if>
+
+Во фримаркере можно использовать методы из джава
+
+6.???
+<#if value??> - value?? - дает булево значение, например, существует ли переменная
+</#if>
+
+<#if value?> -
+</#if>
+
+${message?ifExists}
+
+7. Collapse - для свертывания контента.
+
+Добавляем кнопку, которая сворачивает форму
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+       aria-controls="collapseExample">
+        Add message
+    </a>
+
+Добавляем сам сворачивающийся элемент, он связан с кнопкой по id="collapseExample"
+<div class="collapse" id="collapseExample">
+
+</div>
+
+8. Кнопка для загрузки файла:
+
+<div class="custom-file">
+  <input type="file" class="custom-file-input" id="customFile">
+  <label class="custom-file-label" for="customFile">Choose file</label>
+</div>
+9.
+<div class="form-group">
+  </div>
+Помогает в форме придать структуру ее отдельным элементам
