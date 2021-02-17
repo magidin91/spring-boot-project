@@ -30,6 +30,9 @@ public class UserController {
         return "userList";
     }
 
+    /**
+     * @PathVariable User user спринг получает юзера из ДБ по айди
+     */
     @GetMapping("/{user}")
     public String userEditForm(@PathVariable User user, Model model) {
         model.addAttribute("user", user);

@@ -1,0 +1,32 @@
+Spring Boot Mail: рассылка почты пользователям, активация аккаунта
+Spring Boot Web Application (MVC): Добавляем оповещения пользователей по электронной почте,
+добавляем механизм проверки почтового ящика пользователя (активация аккаунта)
+<!-- mail -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+<!-- mail -->
+
+1. StringUtils.isEmpty() - проверка строки на налл и емпти в базовом спринге
+2. Протокол для защищенного соединения ssl:
+spring.mail.protocol=smtps
+Для незащищенного:
+spring.mail.protocol=smtp
+
+3. /activate/**  - любой урл, который начинается с /activate/
+   /activate/*   - урл, который начинается с /activate/ и имеет еще один сегмент /activate/123
+
+4. в application.properties предотравщает баг
+ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+
+5. Чтобы с почтового ящика можно было рассылать письма сделать настройку:
+
+Почта → Все настройки → Почтовые программы
+Разрешить доступ к почтовому ящику с помощью почтовых клиентов
+С сервера imap.yandex.ru по протоколу IMAP
+Способ авторизации по IMAP
+Пароли приложений и OAuth-токены  - выбрать
+Портальный пароль - выбрать
+https://yandex.ru/support/mail/mail-clients/others.html
+https://mail.yandex.ru/?dpda=yes#setup/client
