@@ -6,7 +6,7 @@
             <#-- class="form-inline" - поля будут в линию -->
             <form method="get" action="/main" class="form-inline">
                 <!-- value="$.{tag!}" - чтобы тег отображался после поиска -->
-                <input type="text" name="tag" class="form-control" value="${tag!?ifExists}" placeholder="find by tag">
+                <input type="text" name="tag" class="form-control" value="${tag!?ifExists}" placeholder="search by tag">
                 <button type="submit" class="btn btn-primary ml-2">Search</button>
             </form>
         </div>

@@ -28,6 +28,13 @@ collapse значит, меню может сворачиваться -->
                 <a class="nav-link" href="/user">User List</a>
             </li>
             </#if>
+            <#-- получаем переменную юзер из security.ftlh <#assign> объявления -->
+            <#-- т.е. ссылка выводитс, только если юзер авторизован и не равен налл -->
+            <#if user??>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/profile">Profile</a>
+                </li>
+            </#if>
         </ul>
         <#-- Выводим в навбаре имя юзера, используя объявленную в "security.ftlh" переменную name
         class="mr-3" - отступ справа 3 единицы -->

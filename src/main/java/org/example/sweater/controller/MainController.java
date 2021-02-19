@@ -46,12 +46,13 @@ public class MainController {
         }
         model.addAttribute("messages", messages);
         model.addAttribute("tag", tag);
+
         return "main";
     }
 
-    /**
-     * @AuthenticationPrincipal User user - получаем аутентифицированного юзера, кот-й делает запрос
-     */
+    /* @AuthenticationPrincipal User user - получаем аутентифицированного юзера, кот-й делает запрос,
+    * из контекста, чтобы не обращаться к БД */
+
     @PostMapping("/main")
     public String add(@AuthenticationPrincipal User user,
                       @RequestParam String text,

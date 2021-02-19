@@ -6,7 +6,7 @@ known = Session.SPRING_SECURITY_CONTEXT??
 
 <#if known>
     <#assign
-        <#-- аутентифицрованный пользователь -->
+        <#-- получаем аутентифицрованного юзера из контекста секьюрити -->
     user = Session.SPRING_SECURITY_CONTEXT.authentication.principal
     name = user.getUsername()
     isAdmin = user.isAdmin()
