@@ -17,16 +17,38 @@
         Add new message
     </a>
     <!-- по   id="collapseExample" кнопка связна со схлапывающимся элементом-->
-    <div class="collapse" id="collapseExample">
+    <!--"collapse <#if message??>show</#if>" - если есть message добавляем к классу collapse show, чтобы форма не сворачивалась -->
+    <div class="collapse <#if message??>show</#if>" id="collapseExample">
         <div class="form-group mt-3">
             <!-- форма для ввода сообщений -->
             <form method="post" action="/main" enctype="multipart/form-data">
+
                 <div class="form-group">
-                    <input type="text" name="text" class="form-control" placeholder="enter message"/>
+                    <#-- добавляем к классу строку is-invalid, если есть ошибка валидации,
+                   ее значение будет выведено под полем ввода  -->
+                    <input type="text" class="form-control ${(textError??)?string('is-invalid', '')}"
+                            <#-- делаем проверку, т.к. message приходит после обработки формы-->
+                           value="<#if message??>${message.text}</#if>"
+                           name="text"
+                           placeholder="Введите сообщение"/>
+                    <#-- если есть textError, выводим ошибку валидации -->
+                    <#if textError??>
+                        <div class="invalid-feedback">
+                            ${textError}
+                        </div>
+                    </#if>
                 </div>
+
                 <div class="form-group">
-                    <input type="text" name="tag" class="form-control" placeholder="enter tag">
+                    <input type="text" name="tag" class="form-control ${(tagError??)?string('is-invalid', '')}"
+                           value="<#if message??>${message.tag}</#if>" placeholder="enter tag">
+                    <#if tagError??>
+                        <div class="invalid-feedback">
+                            ${tagError}
+                        </div>
+                    </#if>
                 </div>
+
                 <!-- загрузка файла -->
                 <div class="form-group">
                     <div class="custom-file">
@@ -45,11 +67,11 @@
         <#list messages as message>
         <#-- для вывода сообщений изпользуем элемент "card"-->
             <div class="card my-3">
-                    <#-- проверка наличия поля filename -->
-                    <#if message.filename??>
-                    <#--вывод картинки-->
-                        <img src="/img/${message.filename}" class="card-img-top">
-                    </#if>
+                <#-- проверка наличия поля filename -->
+                <#if message.filename??>
+                <#--вывод картинки-->
+                    <img src="/img/${message.filename}" class="card-img-top">
+                </#if>
                 <div class="m-2">
                     <span>${message.text}</span>
                     <i>${message.tag}</i>

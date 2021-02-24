@@ -64,6 +64,13 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
         <!-- flyway миграция -->
+        <!-- Spring Bean Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+        <!-- Spring Bean Validation -->
     </dependencies>
 
     <build>

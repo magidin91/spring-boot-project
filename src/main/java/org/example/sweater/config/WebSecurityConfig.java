@@ -2,12 +2,13 @@ package org.example.sweater.config;
 
 import org.example.sweater.service.UserService;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * При старте приложения конфигурирует веб-секьюрити, в метод configure передается объект HttpSecurity,
@@ -16,11 +17,15 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Import(BeanConfig.class)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
 
-    public WebSecurityConfig(UserService userService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -45,6 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService) // конфигурирует способ получения пользователя из бд
                 /* шифрует пароли, чтобы они не хранились в явном виде */
-                .passwordEncoder(NoOpPasswordEncoder.getInstance()); // для тестирования используем без шифрования
+                .passwordEncoder(passwordEncoder); // используем BCryptPasswordEncoder
     }
 }

@@ -1,0 +1,127 @@
+Bean validation, шифрование паролей
+
+Готовим приложение к деплою, наводим порядок: добавляем шифрование паролей и проверку (валидацию) данных, приходящих на сервер.
+
+1.
+1) Первым шагом добавим шифрование паролей: в классе WebSecurityConfig добавим инициацию бина PasswordEncoder классом BCryptPasswordEncoder.
+И сразу же подставим его в authenticationBuilder. Далее добавим шифрование пароля нового пользователя при его регистрации в UserService.
+
+2) Чтобы уже зарегистрированные в системе пользователи могли войти в систему, добавим скрипт миграции, шифрующий уже унесенные пароли.
+
+3) Следующим шагом добавим валидацию входящих данных с помощью механизма Bean Validation.
+Для этого на поля доменных классов добавим аннотации @Length, @NotBlank и пр. с указанием ограничений и сообщений,
+которые будут отображаться при ошибках валидации.
+
+4) После этого немного модифицируем контроллеры: добавим к получаемым от пользователя данным аннотацию @Valid и
+2 обязательных аргумента: BindingResult и Model, которые должны идти в порядке, приведенном в данном тексте.
+Первый из них принимает сообщения валидации, а второй служит для передачи данных из контроллера во view.
+
+5) Последним шагом остаётся только вывести сообщения об ошибках валидации во view.
+Для оформления сообщений используем стили из CSS фреймворка Bootstrap.
+
+2. Таким образом, мы создали бин, спринг поместит его в контекст,
+и когда мы автовайрим этот интерфейс спринг сможет подтянуть этот бин.
+
+@Bean
+public PasswordEncoder getPassWordEncoder() { return new BCryptPasswordEncoder(8);}
+8 - характеризует надежность ключа шифрования.
+
+3.Добавили миграцию, чтобы захешировать существующие пароли
+https://postgrespro.ru/docs/postgrespro/9.6/pgcrypto
+
+/* расширение постгреса хеширвоания */
+create extension if not exists pgcrypto;
+
+/* хешируем уже добавленные пароли, gen_salt - генерир-ть соль, 'bf' - алгоритм шифрования, 8 - сложность */
+update usr set password = crypt(password, gen_salt('bf', 8));
+
+Миграции запускаются при старте, отработавшие миграции не запускаются повторно, эта инф-ия есть в таблице в бд, также успещность,
+хеш сумма итд.
+
+4. Создал класс, в котором создается бин PassWordEncoder().
+Чтобы бин был создан в класс конфигурации спринг секьюрити добавил импорт класса, в котором создается бин.
+@Import(BeanConfig.class)
+
+5. Bean validation - аннотации в спринге для валидирвоания вводимых полей. (накидываем на поля бинов)
+Находятся в пакете javax.validation.constraints
+
+Аннотации валидации проверяют любую установку значения в поле, помеченное аннотацией валидации,
+т.е. если поле @NotBlank, а мы устанавливаем null, то получим исключение javax.validation.ConstraintViolationException.
+
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>2.4.2</version>
+</dependency>
+
+The annotated element must not be {@code null} and must contain at least one non-whitespace character.
+@NotBlank(message = "Please fill the message") - поле не должно быть пустым, в другом случае выводим сообщение.
+
+@Length(max = 2048, message = "Too long") - макс длина поля, в другом случае выводим сообщение.
+
+@Email(message = "Email is not correct")
+The string has to be a well-formed email address.
+Exact semantics of what makes up a valid email address are left to Jakarta Bean Validation providers. Accepts {@code CharSequence}.
+null elements are considered valid.
+
+Чтобы валидация работала, нужно получать соответствующие ентити в контроллерах, заменяем отдельные параметры в методах на
+модели:  message, user.
+Заменяем @RequestParam String text,@RequestParam String tag на сам @Valid Message message.
+@Valid - запускает валидацию.
+
+public String add(@AuthenticationPrincipal User user,
+                      @Valid Message message,
+                      /* Список аргументов и сообщений ошибок валидаций */
+                      BindingResult bindingResult,
+                      Model model,
+                      @RequestParam("file") MultipartFile file) throws IOException {}
+BindingResult bindingResult должен всега идти перед  Model model, иначе ошибки валидации будут сыпаться на фронт без обработки.
+
+Получаем ошибки и добавляем их в модель   model.mergeAttributes(errorMap); // добавляет все атрибуты из мапы в модель.
+
+Чтобы вывести результаты валидации в шаблон:
+Добавляем элемент валидации + добавляем к классу поля ввода 'is-invalid', чтобы выводились невалидные поля.
+
+Если все успешно:
+
+<div class="valid-feedback">
+Looks good!
+</div>
+
+Если есть ошибки валидации (подсвечивает красным) и выводим под полем ввода:
+
+<div class="invalid-feedback">
+Please choose a username.
+</div>
+
+Поле ввода формы будет выглядеть следующим образом:
+
+<input type="text" class="form-control ${(textError??)?string('is-invalid', '')}"
+value="<#if message??>${message.text}</#if>" name="text" placeholder="Введите сообщение" />
+
+<#if textError??>
+      <div class="invalid-feedback">
+      ${textError}
+      </div>
+</#if>
+</div>
+
+Чтобы в поле ввода было выведено сообщение обо ошибке из блока #if, нужно к классу поля ввода добавить is-invalid,
+соответственно будет выведен элемент с классом "invalid-feedback" под полем ввода:
+
+${(textError??)?string('is-invalid', '')} - это выражение означает вставку переменной, приведенной к строке
+если textError?? возвращает тру, то возвращаем строку 'is-invalid'.
+
+6. flyway  в файл пропертей добавьте spring.flyway.enabled=false(после миграции отключит проверку checkSum)
+7.
+<#-- мы можем получить данные спринг секьюрити в шаблоне
+Сессия юзера и последнее искл-ие -->
+    <#if Session?? && Session.SPRING_SECURITY_LAST_EXCEPTION??>
+        <div class="alert alert-danger" role="alert">
+            ${Session.SPRING_SECURITY_LAST_EXCEPTION.message}
+        </div>
+    </#if>
+
+
+
+
