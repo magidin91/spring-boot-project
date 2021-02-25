@@ -13,8 +13,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-/* класс User имеет метод getAuthorities(), т.к. Roles implements GrantedAuthority */
-@PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
 
     private final UserService userService;

@@ -2,10 +2,10 @@ package org.example.sweater.service;
 
 import org.example.sweater.entity.Role;
 import org.example.sweater.entity.User;
+import org.example.sweater.exception.UserNotFoundInDataBase;
 import org.example.sweater.repository.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -30,12 +30,12 @@ public class UserService implements UserDetailsService {
      * Возвращает юзера по его имени
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UserNotFoundInDataBase {
 
         User user = userRepo.findByUsername(username);
         if (user == null) {
-            /* бросаем исключение с сообщением, чтобы вывести его в логине, если юзер не найден */
-            throw new UsernameNotFoundException("User not found");
+            /* бросаем свое исключение для сроинг секьюрити с сообщением, чтобы вывести его в логине, если юзер не найден */
+            throw new UserNotFoundInDataBase("User not found");
         }
         return user;
     }

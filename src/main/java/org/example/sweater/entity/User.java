@@ -21,11 +21,6 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
-    /*  @Transient - говорит хибернейту не пытаться сохранить поле в БД и не получать его из БД */
-    /*  Проверка введенного пароля */
-    @Transient
-    private String password2;
-
     private boolean active;
     /* 1. Используя аннотацию @ElementCollection - чтобы не создавать таблицу для енама ролей.
        2. fetch = FetchType.LAZY - Hibernate загрузит роли, только когда пользователь обратится к полю roles
@@ -128,13 +123,4 @@ public class User implements UserDetails {
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
     }
-
-    public String getPassword2() {
-        return password2;
-    }
-
-    public void setPassword2(String password2) {
-        this.password2 = password2;
-    }
-
 }

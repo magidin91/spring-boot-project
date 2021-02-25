@@ -6,6 +6,7 @@ ${path} - использование этой переменной в макро
             <label class="col-sm-2 col-form-label"> User Name : </label>
             <div class="col-sm-6">
                 <input type="text" name="username"
+                       <#-- добавляя к классу 'is-invalid', мы связываем поле ввода и сообщение о невалидности поля -->
                        class="form-control ${(usernameError??)?string('is-invalid', '')}"
                        placeholder="enter username"
                        <#-- если ввели неправильный пароль, то логин остается введенным -->
@@ -61,6 +62,18 @@ ${path} - использование этой переменной в макро
                     </#if>
                 </div>
             </div>
+            <div>
+                <#-- рекапча, вставляем наш sitekey -->
+                <#-- рекапча отдает ответ с данными из формы в обрабатывающий пост метод -->
+                <div class="col-sm-6">
+                    <div class="g-recaptcha" data-sitekey="6LdJjmYaAAAAACHngo9XevMav2JXsGAy9EA4yuK8"></div>
+                    <#-- если капча неуспешна - выводим алерт -->
+                    <#if captchaError??>
+                        <div class="alert alert-danger" role="alert">
+                            ${captchaError}
+                        </div>
+                    </#if>
+                </div>
         </#if>
 
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>

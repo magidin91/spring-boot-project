@@ -32,12 +32,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/", "/registration", "/static/**", "/activate/*").permitAll() // по этому пути разрешаем полный доступ
+                    .antMatchers("/", "/registration", "/static/**", "/activate/*").permitAll() // по этому пути разрешаем полный доступ
                     .anyRequest().authenticated() // для остальных запросов требуется авторизация
                 .and()
                     .formLogin()
                     .loginPage("/login")
                     .permitAll() // разрешаем логином пользоватсья всем
+                .and()
+                /* даже если сессия в сервлет контейнере истекла, спринг будет искать по полученным от вас идентификаторам
+                * ваши настройки и постарается вас аутентифицировать повторно */
+                    .rememberMe()
                 .and()
                     .logout()
                     .permitAll(); // разрешаем логаутом пользоваться всем
@@ -48,8 +52,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService) // конфигурирует способ получения пользователя из бд
-                /* шифрует пароли, чтобы они не хранились в явном виде */
+        /* UserService реализует интерфейс UserDetailsService с методом loadUserByUsername, т.о.
+         обеспечивает получение юзера (UserDetails) по юзернейму из БД */
+        auth.userDetailsService(userService)
+                /* PasswordEncoder хеширует пароли, также сравнивает введенный пароль и хешированный пароль */
                 .passwordEncoder(passwordEncoder); // используем BCryptPasswordEncoder
     }
 }

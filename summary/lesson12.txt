@@ -1,0 +1,102 @@
+ReCaptcha, rest client, rememberMe и сохранение сессий в БД
+https://www.youtube.com/watch?v=7cDpbAbhyjc&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2XRO&index=12&ab_channel=letsCode
+
+Spring Boot Web Application (MVC): добавляем reCaptcha, поддержку rememberMe и хранения сессий в БД.
+Spring Boot упакован многими удобными механизмами, но поддержки капчи “из коробки” не сделано, что мы и исправим.
+
+1. @Transient - говорит хибернейту не пытаться сохранить поле в БД и не пытаться получать его из БД */
+
+@Transient
+private String password2;
+
+2. Регистрируемся и делаем настройки для recaptcha в личном кабинете гугл рекапча:
+https://www.google.com/recaptcha/admin/create#list
+
+Гайд - https://developers.google.com/recaptcha/intro
+
+Вставляем <script src='https://www.google.com/recaptcha/api.js'></script>
+перед закрытием </head> в common. (уквзываем во всех страницах)
+
+Используется в самом виджете рекапчи в той форме, куда хотим вставить (data-sitekey)
+6LdJjmYaAAAAACHngo9XevMav2JXsGAy9EA4yuK8
+
+Используйте этот секретный ключ для обмена данными между вашим сайтом и сервисом reCAPTCHA.
+6LdJjmYaAAAAAK2BqHiFq0Byfnr8NZaJ4zOvInoz
+Сервер должен знать секретный код.
+
+Вставляем рекапчу в форму, уазываем сайт кей (верхний ключ)
+<#-- рекапча, вставляем наш sitekey -->
+                <div class="col-sm-6">
+                    <div class="g-recaptcha" data-sitekey="6LdJjmYaAAAAACHngo9XevMav2JXsGAy9EA4yuK8"></div>
+                    <#if captchaError??>
+                        <div class="alert alert-danger" role="alert">
+                            ${captchaError}
+                        </div>
+                    </#if>
+</div>
+
+- Класс RestTemplate  - это клиент (rest client) для осуществления основных Http - запросов из нашего спринг приложения.
+https://spring.io/guides/gs/consuming-rest/
+
+Мы делаем постзапрос на сервер гугла рекапча, передавая ему секретный код и ответ рекапчи.
+Далее сервер рекапчи обрабатывает результат и возвращает нам  ответ в заданном нами формате (CaptchaResponseDto.class
+- дто для получения данных от гугла),
+в общем случае нужна просто переменная success, также можно получить ошибки.
+
+/* постзапрос по адресу урл, с пустым телом, в ответ получаем CaptchaResponseDto.class */
+CaptchaResponseDto response = restTemplate.postForObject(url, Collections.emptyList(), CaptchaResponseDto.class);
+
+урл для запроса к серверу гугла  - CAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s",
+передаем два параметра: секретный код (чтобы сервер нас идентифицировал) и ответ рекапчи (в ней хранится ключ нашего приложения и сам ответ).
+
+Если рекапча неуспешна, мы возвращаем снова шаблон регистрации и выводим об этом сообщение.
+
+3.
+ /* @JsonAlias("error-codes") определяет альтернативное имя поля, т.к. java не поддерживает имя переменной с дефисом */
+    @JsonAlias("error-codes")
+    private Set<String> errorCodes;
+
+4. Добавляем запоминание, чтобы сессии пользователя не протухали, когда истекает сессия контейнера сервлетов.
+.rememberMe() - даже если сессия в сервлет контейнере (томкат) истекла, спринг будет искать по полученным от вас идентификаторам
+ваши настройки и постарается вас аутентифицировать повторно.
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                ....
+                .and()
+                    .rememberMe()
+               ...
+    }
+
+!Но если мы перезапускаем сервер или у нас работает неск. серверов, то данные о сессии могут потеряться, поэтому
+можно сохранить данные о сессиях, во внешних кешах (Redis) или для простого примера в бд.
+
+
+Сохраняем спринг сессии через jdbcв бд
+Как использовать Spring Session для прозрачного использования СУБД для поддержки HttpSession веб-приложения при использовании Spring Boot:
+
+spring-session для jdbc - сохранение сессий в бд:
+
+<dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-jdbc</artifactId>
+</dependency>
+
+Добавляем пропертис в: application.properties
+spring.session.jdbc.initialize-schema=always - спринг сам создаст таблицу для храненения сессий
+spring.session.jdbc.table-name=SPRING_SESSION - определили имя созданной таблицы сессий
+
+Благодаря тому что сессия сохраняется в бд, даже если мы перезапустим приложение, сессия восстановится.
+
+Мы также можем настроить параметры сессии.
+
+primary_id 8ec84e52-6e51-4872-8e4c-489c174c14e4
+session_id 68a3e10f-36f0-42d3-9b9c-dc388325689c
+creation_time 1614219928116
+last_access_time 1614219941647
+max_inactive_interval 1800
+expiry_time 1614221741647 - дата, когда сессия истечет.
+principal_name admin
+
+
+
