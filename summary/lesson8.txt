@@ -43,23 +43,6 @@ http://htmlbook.ru/html/ul
 Если к тегу <ul> применяется таблица стилей, то элементы <li> наследуют эти свойства.
 
 !!! Чтобы затем вставить куда-то панель навигации - <#include "navbar.ftlh"> "navbar.ftlh" - путь к файлу.
-3.  <h5>Hello, guest</h5> - заголовок
-4. Отступы: https://getbootstrap.com/docs/4.1/utilities/spacing/
-
-{property}{sides}-{size}
-property: margin или padding
-sides - сторона от кот-ой отступ
-size -рзамер отступа
-
-Пример: используем отступ сверху на 5 единиц (margin top 5 или mt-5) для нашего контейнера (сетки)
-<div class="container mt-5">
-    <#-- <#nested>- секция, которая определяет, куда вставляется вложенный код -->
-    <#nested>
-</div>
-
- <div class="m-2"> - отступ со всех сторон на 2
-  <div class="card my-3"> - отступ сверху и снизу на 3
-
 5. Определение переменных в шаблоне фримаркера
 Мы можем определить в одном шаблоне переменные: <#assign a=value1, b=value2>, например в "security.ftlh",
 а затем использовать их в любом шаблоне через <#include "security.ftlh">

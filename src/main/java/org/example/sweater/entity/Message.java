@@ -19,7 +19,7 @@ public class Message {
     private String tag;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") // будет создан внешний ключ "user_id", ссылающийся на первичный ключ сущности User
     private User author;
 
     private String filename;

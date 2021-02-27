@@ -1,0 +1,4 @@
+JPA oneToMany - сообщения пользователя, редактор сообщений
+https://www.youtube.com/watch?v=-gdDklUu03k&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2XRO&index=15&ab_channel=letsCode
+
+Добавляем связь oneToMany между пользователем и его сообщениями. Делаем страницу сообщений пользователя и кнопку редактирования сообщений.

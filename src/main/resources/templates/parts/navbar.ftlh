@@ -1,4 +1,4 @@
-<#include "security.ftlh">
+<#include "security.ftlh"> <#-- используем файл с объявлением переменных -->
 <#import "login.ftlh" as l>
 
 <#-- Панель навигации -->
@@ -22,6 +22,11 @@ collapse значит, меню может сворачиваться -->
             <li class="nav-item">
                 <a class="nav-link" href="/main">Messages</a>
             </li>
+            <#if user??>
+            <li class="nav-item">
+                <a class="nav-link" href="/user-messages/${currentUserId}">My messages</a>
+            </li>
+            </#if>
             <#-- показываем ссылку только если пользователь - админ-->
             <#if isAdmin>
             <li class="nav-item">
@@ -29,7 +34,7 @@ collapse значит, меню может сворачиваться -->
             </li>
             </#if>
             <#-- получаем переменную юзер из security.ftlh <#assign> объявления -->
-            <#-- т.е. ссылка выводитс, только если юзер авторизован и не равен налл -->
+            <#-- т.е. ссылка выводится, только если юзер авторизован и не равен налл -->
             <#if user??>
                 <li class="nav-item">
                     <a class="nav-link" href="/user/profile">Profile</a>
