@@ -60,6 +60,8 @@ Hibernate: alter table if exists user_role add constraint FKfpm8swft53ulq2hl11yp
 spring.jpa.generate-ddl=false
 spring.jpa.hibernate.ddl-auto=validate - хибер только проверяет структуру бд.
 
+spring.flyway.enabled=false - это отключение flyway в спринге.
+
 3. Файл для миграции создаем в папке resources\db.migration\
 Название файла миграции начинается с большой V далее цифра миграции и двойное подчеркивание.  V1__Init_DB.sql
 

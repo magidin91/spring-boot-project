@@ -81,7 +81,7 @@ public class MainController {
         /* если нет ошибок валидации, сохраняем сообщение в БД */
         else {
             saveFile(message, file);
-            /* чтобы форма не оставалась развернутой приудачном добавлении сообщения */
+            /* чтобы форма не оставалась развернутой при удачном добавлении сообщения */
             model.addAttribute("message", null);
 
             messageRepo.save(message);
@@ -130,15 +130,19 @@ public class MainController {
     @GetMapping("/user-messages/{user}")
     public String userMessages(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable User user,
+            @PathVariable User user, // юзер - на страницу сообщений, которого зашли
             Model model,
             @RequestParam(required = false) Message message
     ) {
         /* сообщения конкретного юзера */
         Set<Message> messages = user.getMessages();
+        model.addAttribute("userChannel", user);
+        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+        model.addAttribute("subscribersCount", user.getSubscribers().size());
+        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
         model.addAttribute("messages", messages);
         model.addAttribute("isCurrentUser", currentUser.equals(user));
-        model.addAttribute("message", message);
+        model.addAttribute("messageFromDB", message);
 
         return "userMessages";
     }
@@ -146,26 +150,30 @@ public class MainController {
     @PostMapping("/user-messages/{user}")
     public String updateMessage(
             @AuthenticationPrincipal User currentUser,
-            @PathVariable Long user,
-            @RequestParam("id") Message message,
+            @PathVariable User user,
+            @RequestParam(name = "id", required = false) Message message,
             @RequestParam String text,
             @RequestParam String tag,
             @RequestParam MultipartFile file
     ) throws IOException {
-        if (message.getAuthor().equals(currentUser)) {
-            if (!StringUtils.isEmpty(text)) {
-                message.setText(text);
-            }
-
-            if (!StringUtils.isEmpty(tag)) {
-                message.setTag(tag);
-            }
-
-            saveFile(message, file);
-
-            messageRepo.save(message);
+        if (!user.equals(currentUser) || StringUtils.isEmpty(text)) { // лучше добавить валидацию и вынести общее из add()
+            return "redirect:/user-messages/" + user.getId();
         }
 
-        return "redirect:/user-messages/" + user;
+        if (message == null) {
+            message = new Message();
+            message.setAuthor(currentUser);
+        }
+
+        message.setText(text);
+        message.setTag(tag);
+
+
+        saveFile(message, file);
+
+        messageRepo.save(message);
+
+
+        return "redirect:/user-messages/" + user.getId();
     }
 }

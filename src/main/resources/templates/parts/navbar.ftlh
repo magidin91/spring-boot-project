@@ -19,10 +19,10 @@ collapse значит, меню может сворачиваться -->
                     <#-- кнопка Home -->
                 <a class="nav-link" href="/">Home</a>
             </li>
+            <#if user??>
             <li class="nav-item">
                 <a class="nav-link" href="/main">Messages</a>
             </li>
-            <#if user??>
             <li class="nav-item">
                 <a class="nav-link" href="/user-messages/${currentUserId}">My messages</a>
             </li>
@@ -43,7 +43,7 @@ collapse значит, меню может сворачиваться -->
         </ul>
         <#-- Выводим в навбаре имя юзера, используя объявленную в "security.ftlh" переменную name
         class="mr-3" - отступ справа 3 единицы -->
-        <div class="navbar-text mr-3">${name}</div>
+        <div class="navbar-text mr-3"><#if user??>${name}<#else>Please, login</#if></div>
         <@l.logout/>
     </div>
 </nav>

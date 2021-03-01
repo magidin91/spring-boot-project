@@ -41,7 +41,7 @@
                 </div>
             </div>
             <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-            <input type="hidden" name="id" value="<#if message??>${message.id}</#if>"/>
+            <input type="hidden" name="id" value="<#if messageFromDB??>${messageFromDB.id}</#if>"/>
             <button type="submit" class="btn btn-primary">Save message</button>
         </form>
     </div>

@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.io.Closeable;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Message {
