@@ -1,0 +1,108 @@
+Интеграционное тестирование с Spring Testing
+https://www.youtube.com/watch?v=Lnc3o8cCwZY&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2XRO&index=17&ab_channel=letsCode
+
+Для проверки корректной работы приложения используют различные тесты,
+наиболее распространённые и лёгкие в написании - интеграционные тесты,
+позволяющие проверить корректную работу всех механизмов, входящих в приложение, вместе.
+
+Мы рассмотрим тестирование авторизации в приложении, получение html страницы нашего приложения
+(с проверкой корректности отдаваемого результата), отправка get, post и multipart запросов с проверкой корректности ответа сервера.
+
+1.
+<!-- testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+</dependency>
+2. Тесты:
+https://docs.spring.io/spring-security/site/docs/4.2.x/reference/html/test-method.html
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class LoginTest {
+
+    @Test
+    public void contextLoads() throws Exception {
+    }
+}
+
+- SpringRunner.class - это класс, который является расширением для Junit, который позволяет запустить стандартные Junit-тесты,
+используя спринг, он содержит логику и методы для запуска и проверки результатов тестов.
+
+@RunWith(SpringRunner.class) -  звпускается с указанным раннером: JUnit вызовет класс SpringRunner.class, чтобы запустить тесты,
+вместо встроенного класса-раннера из JUnit.
+
+- @SpringBootTest - указывает, что мы запускаем тесты в окружении SpringBoot-приложения, спринг найдет все конфигурации и
+восстановит контекст приложения.
+
+- @AutoConfigureMockMvc - чтобы включить и настроить автоматическую настройку MockMvc,
+т.е. спринг пытается создать структуру классов, которая подменяет слой Mvc, что позволит выполнять запросы нашего приложению,
+таким образом мы можем проверить работу контроллеров.
+(MockMvc позволяет не использовать RestTemplate для отправки запросов)
+
+Проверяем, что спринг подтянул бин контроллера из контекста:
+
+@Test
+public void contextLoads() throws Exception {
+    assertThat(controller).isNotNull();
+}
+
+Если у нас есть форма логина, нужно запускаться под каким-то юзером.
+https://docs.spring.io/spring-security/site/docs/4.2.x/reference/html/test-method.html
+Варианты:
+
+- @WithMockUser
+Тест будет запускаться под "user", the password "password", and the roles "ROLE_USER".
+Можно кастомизирвоать имя и роли:
+@WithMockUser(username="admin",roles={"USER","ADMIN"})
+
+- @WithAnonymousUser
+
+- @WithUserDetails(value = "user10") - эта аннотация может быть добавлена к тест-методу, что эмулировать запуск приложения с  UserDetails,
+возвращенного UserDetailsService по указанному юзернейму. (пароль значения не имеет, будет эмуляция входа под указанным юзером)
+
+XPath — язык запросов к элементам XML-документа, позволяет осуществлять поиск по XML - файлу.
+Например, мы можем найти на странице html элемент по переданному xpath- "//*[@id='navbarSupportedContent']/div)",
+который будет представлять строку "admin":
+.andExpect(xpath("//*[@id='navbarSupportedContent']/div)").string("admin");
+
+Чтобы проверять html-документ таким образом нужно, чтобы он соответствовал xml - структуре,
+для этого везде нужно расставить закрывающие скобки.
+
+Таким образом мы проверяем, что выводятся те элементы, что мы ожидаем.
+
+3. Далее, чтобы в тестах всегда были одни данные создаем базу данных для тестов, и заполняем ее данными.
+Указываем над классом @TestPropertySource("/application-test.properties"), чтобы тест запускался с тестовыми пропертями.
+
+Над классом или методом можно накинуть аннотацию @Sql(value = {"...", "..."}, executionPhase = ...),
+которая будет выполнять набор sql на указанной фазе выполнения:
+В value - указываем расположение файла от папки ресурсы.
+Перед методом
+@Sql(value = {"/create-user-before.sql", "/messages-list-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+После метода
+@Sql(value = {"/messages-list-after.sql", "/create-user-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+
+Сами таблицы, как и до этого будут созданы flyway. Но надо подготовить данные:
+
+Соаздаем файлы с sql - инструкциями:
+- create-user-before.sql
+- create-user-after.sql
+- messages-list-after.sql
+- messages-list-before.sql:
+
+delete from message;
+insert into message(id, text, tag, user_id) values
+(1, 'first', 'my-tag', 1),
+(2, 'second', 'more', 1),
+(3, 'third', 'my-tag', 1),
+(4, 'fourth', 'another', 2);
+
+/* сбрасывам hibernate_sequence к значению 10, чтобы знать какой id  будет сгенерирован */
+alter sequence hibernate_sequence restart with 10;
+
+Можно доабвить к элементу некоторую информацию:
+<div class="card my-3 " data-id="${message.id}">
+Здесь мы добавили с помощью data-id айди сообщения, чтобы в тестах можно было проверить существование конкретного сообщения.
+
+
