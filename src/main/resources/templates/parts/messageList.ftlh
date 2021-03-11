@@ -1,8 +1,10 @@
 <#include "security.ftlh">
+<#import "pager.ftlh" as p>
+
 <!-- позволяет расположить неск карточек в ряд -->
 <div class="card-columns" id="message-list">
     <!-- обход коллекции messages во фримаркере -->
-    <#list messages as message>
+    <#list page.content as message>
     <#-- для вывода сообщений изпользуем элемент "card"-->
     <#-- добавили data-id, чтобы в тестах,проверить существование сообщения с конкретным id-->
         <div class="card my-3 " data-id="${message.id}">
@@ -29,3 +31,4 @@
         No message
     </#list>
 </div>
+<@p.pager url page/>

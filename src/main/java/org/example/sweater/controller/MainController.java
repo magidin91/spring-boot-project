@@ -4,12 +4,15 @@ import org.example.sweater.entity.Message;
 import org.example.sweater.entity.User;
 import org.example.sweater.repository.MessageRepo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * GreetingController by Mustache
@@ -45,15 +45,22 @@ public class MainController {
         return "greeting";
     }
 
+    /**
+     * Страница с сообщениями всех юзеров
+     */
     @GetMapping("/main")
-    public String main(@RequestParam(required = false, defaultValue = "") String tag, Model model) {
-        Iterable<Message> messages;
+    public String main(@RequestParam(required = false, defaultValue = "") String tag,
+                       Model model,
+            /* @PageableDefault - дефолтные параметры Pageable, если не получаем их с фронта */
+                       @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Message> page;
         if (tag != null && !tag.isBlank()) {
-            messages = messageRepo.findByTag(tag);
+            page = messageRepo.findByTag(tag, pageable);
         } else {
-            messages = messageRepo.findAll();
+            page = messageRepo.findAll(pageable);
         }
-        model.addAttribute("messages", messages);
+        model.addAttribute("url", "/main");
+        model.addAttribute("page", page);
         model.addAttribute("tag", tag);
 
         return "main";
@@ -112,19 +119,6 @@ public class MainController {
             file.transferTo(new File(uploadPath + "/" + resultFilename));
             message.setFilename(resultFilename);
         }
-    }
-
-    @PostMapping("filter")
-    public String filter(@RequestParam String tag, Map<String, Object> model) {
-        Iterable<Message> messages;
-        if (tag != null && !tag.isBlank()) {
-            messages = messageRepo.findByTag(tag);
-        } else {
-            messages = messageRepo.findAll();
-        }
-
-        model.put("messages", messages);
-        return "main";
     }
 
     @GetMapping("/user-messages/{user}")

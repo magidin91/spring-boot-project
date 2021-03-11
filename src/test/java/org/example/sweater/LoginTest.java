@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource("/application-test.properties")
+@TestPropertySource("/application-test.properties") // запускаем с пропертис для тестов
 public class LoginTest {
 
     @Autowired
@@ -31,6 +31,7 @@ public class LoginTest {
         this.mockMvc.perform(get("/"))
                 .andDo(print())
                 .andExpect(status().isOk())
+                /* проверяем, что на странице получим указанные строки */
                 .andExpect(content().string(containsString("Hello, guest")))
                 .andExpect(content().string(containsString("Please, login")));
     }
@@ -57,7 +58,7 @@ public class LoginTest {
 
     @Test
     public void badCredentials() throws Exception {
-        /* обращение к форме логина просто через пост-запрос (без formLogin())*/
+        /* обращение к форме логина через пост-запрос (без использования метода formLogin) */
         this.mockMvc.perform(post("/login").param("username", "jonh"))
                 .andDo(print())
                 .andExpect(status().isForbidden()); // 403 статус

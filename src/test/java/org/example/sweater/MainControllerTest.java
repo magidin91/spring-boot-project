@@ -38,7 +38,7 @@ public class MainControllerTest {
 
 
     /**
-     * Проверяем конкретный элемент на главной странице
+     * Проверяем конкретный элемент (имя юзера) на главной странице
      */
     @Test
     public void mainPageTest() throws Exception {
@@ -98,6 +98,7 @@ public class MainControllerTest {
                 .andExpect(xpath("//*[@id='message-list']/div").nodeCount(5))
                 /* id=10, т.к. в скрипте messages-list-before.sql мы указали alter sequence hibernate_sequence restart with 10 */
                 .andExpect(xpath("//*[@id='message-list']/div[@data-id='10']").exists())
+                /* проверяем текст и тег добавленного сообщения */
                 .andExpect(xpath("//*[@id='message-list']/div[@data-id='10']/div/span").string("fifth"))
                 .andExpect(xpath("//*[@id='message-list']/div[@data-id='10']/div/i").string("new one"));
     }
