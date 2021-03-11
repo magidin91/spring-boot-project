@@ -8,7 +8,7 @@
         tail = (pageNumber < totalPages - 3)?then([-1, totalPages], [totalPages - 2, totalPages - 1, totalPages])
         bodyBefore = (pageNumber > 4 && pageNumber < totalPages - 1)?then([pageNumber - 2, pageNumber - 1], [])
         bodyAfter = (pageNumber > 2 && pageNumber < totalPages - 3)?then([pageNumber + 1, pageNumber + 2], [])
-
+        <#-- список страниц -->
         body = head + bodyBefore + (pageNumber > 3 && pageNumber < totalPages - 2)?then([pageNumber], []) + bodyAfter + tail
         />
     <#else>
@@ -39,7 +39,7 @@
                 </#if>
             </#list>
         </ul>
-
+        <#-- Выбор количества сообщений на странице -->
         <ul class="pagination">
             <li class="page-item disabled">
                 <a class="page-link" href="#" tabindex="-1">Элементов на странице</a>
@@ -57,7 +57,6 @@
                 </#if>
             </#list>
         </ul>
-
     </div>
 </#macro>
 

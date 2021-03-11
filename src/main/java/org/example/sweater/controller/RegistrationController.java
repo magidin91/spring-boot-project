@@ -41,6 +41,9 @@ public class RegistrationController {
         return "registration";
     }
 
+    /**
+     * Добавялет юзера при регистрации
+     */
     @PostMapping("registration")
     public String addUser(
             @RequestParam("password2") String passwordConfirm,

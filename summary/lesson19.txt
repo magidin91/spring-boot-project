@@ -1,0 +1,31 @@
+Модульное тестирование и подмена (mock object)
+https://www.youtube.com/watch?v=QrSR1fm9JwA&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2XRO&index=19
+
+
+Про мокито.
+https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#stubbing
+
+0. Создает мок для объекта.
+
+@MockBean
+private UserRepo userRepo;
+
+1. Задать поведение моку или реальному объекту. (Spy)
+Mockito.doReturn(new User())
+                .when(userRepo)
+                .findByUsername("John");
+Если не задаем поведение реальнмоу объекту, лучше использовать when(mock.someMethod("...")).thenReturn("first");
+
+2. Проверить, сколько раз был вызван метод из объекта.
+Mockito.verify(userRepo, times(1)).save(user);
+
+3. Дополнительно проверить правильность аргументов метода.
+- Mockito.verify(mailSender, Mockito.times(1))
+                .send(
+                        ArgumentMatchers.eq(user.getEmail()), // проверяем, что метод вызван с корректным емейлом
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString()
+                );
+
+- Mockito.verify(userRepo, times(0)).save(ArgumentMatchers.any(User.class));
+
