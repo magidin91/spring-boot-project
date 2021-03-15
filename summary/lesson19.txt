@@ -3,6 +3,7 @@ https://www.youtube.com/watch?v=QrSR1fm9JwA&list=PLU2ftbIeotGoGSEUf54LQH-DgiQPF2
 
 
 Про мокито.
+https://site.mockito.org/
 https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#stubbing
 
 0. Создает мок для объекта.

@@ -16,6 +16,7 @@
               crossorigin="anonymous"/>
         <#-- скрипт для рекапча -->
         <script src='https://www.google.com/recaptcha/api.js'></script>
+        <script src="https://kit.fontawesome.com/16dc073022.js" crossorigin="anonymous"></script>
     </head>
     <body>
     <#-- вставляем панель навигации -->

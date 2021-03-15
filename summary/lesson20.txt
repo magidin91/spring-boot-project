@@ -1,0 +1,41 @@
+Добавляем "лайки", используем HQL (JPQL)
+
+HQL (Hibernate Query Language) – это объекто-ориентированный язык запросов, который очень похож на SQL.
+Главное различие языков HQL и SQL связано с тем, что SQL формирует запросы из наименований таблиц в базе данных и их столбцов,
+а HQL работает с сущностями (классами) и их полями (аттрибутами класса).
+https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html#hql
+https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.at-query
+
+1.
+public interface UserRepository extends JpaRepository<User, Long> {
+
+@Query("select u from User u where u.emailAddress = ?1")
+User findByEmailAddress(String emailAddress);
+}
+
+
+@Query("from Message m where m.author= :author")
+Page<Message> findByUser(Pageable pageable, @Param ("author") User author);
+
+2. Для лайков использовали данный фреймворк https://fontawesome.com/
+
+3. В запросе хибера можно сразу получить ДТО
+
+@Query("select new com.example.sweater.domain.dto.MessageDto("m, 0 , false") from Message") //в скобках просто параметры конструктора
+Page<Message> findAll(Pageable pageable);
+
+4. EntityManager entityManager можно использовать, чтобы проверить запросы в режиме дебага (Alt + F8)
+
+@Service
+public class MessageService {
+private final MessageRepo messageRepo;
+
+@Autowired
+EntityManager entityManager;
+}
+
+5.
+  /* позволяет передать атрибуты в редирект */
+            RedirectAttributes redirectAttributes,
+            /* для получения страницы, с которой пришли */
+            @RequestHeader(required = false) String referer

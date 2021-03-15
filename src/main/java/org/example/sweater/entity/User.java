@@ -54,7 +54,6 @@ public class User implements UserDetails {
             joinColumns = { @JoinColumn(name = "subscriber_id") },
             inverseJoinColumns = { @JoinColumn(name = "channel_id") }
     )
-
     private Set<User> subscriptions = new HashSet<>();
 
     public Set<User> getSubscribers() {
