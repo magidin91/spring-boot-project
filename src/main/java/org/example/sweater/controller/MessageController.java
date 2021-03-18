@@ -69,9 +69,7 @@ public class MessageController {
         return "main";
     }
 
-    /* @AuthenticationPrincipal User user - получаем аутентифицированного юзера, кот-й делает запрос,
-     * из контекста, чтобы не обращаться к БД */
-    /* сохранение сообщения */
+    /* Cохранение сообщения */
     @PostMapping("/main")
     public String add(@AuthenticationPrincipal User user,
                       @Valid Message message,

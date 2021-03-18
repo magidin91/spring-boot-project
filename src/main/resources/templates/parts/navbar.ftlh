@@ -4,8 +4,6 @@
 <#-- Панель навигации -->
 <#-- если размер экрана меньше large, то navbar в свернутом виде -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-<#-- ссылка, которая ведет на корень проекта -->
-    <a class="navbar-brand" href="/">Sweater</a>
 <#-- кнопка меню при свернутой панели навигации -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

@@ -1,0 +1,51 @@
+Turbolinks: ускоряем отображение страниц
+
+Turbolinks - библиотека из мира Ruby, ускоряющая отрисовку страниц после их загрузки.
+Ускорение достигается засчет перерисовки только тела документа, без ненужной переинициализации всего DOM дерева страницы,
+а также засчёт исключения загрузки дополнительных ресурсов и инициализации JavaScript кода.
+Дополнительно данная библиотека добавляет прогресс бар! в верхней части страницы, аналогичный тому,
+что мы можем наблюдать на страницах многих сайтов, вроде YouTube и GitHub
+
+Turbolinks кеширует в браузере библиотеки джаваскрипта(для этого мы переносим их в head),
+и другие ресурсы и обновляется только контент(body).
+Скрипты, находящиеся в body, будут выполняться при каждой загрузке страницы.
+
++ Браузер кеширует страницы, которые мы уже открывали => более быстрая загрузка.
+Если на странице есть изменения, то он показывает кешированную страницу,
+а когда с сервера приходят изменения - страница обновляется.
+
+https://cdnjs.com/libraries/turbolinks
+
+1. Добавили js скрипт для турболинкс в head
+ <script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+                crossorigin="anonymous"></script>
+
+2.<#-- Атрибут defer откладывает выполнение скрипта до тех пор, пока вся страница не будет загружена полностью -->
+<script defer src="..." crossorigin="anonymous"></script>
+
+3. ModelAndView
+Holder for both Model and View in the web MVC framework.
+ * Note that these are entirely distinct. This class merely holds
+ * both to make it possible for a controller to return both model
+ * and view in a single return value.
+ *
+ * <p>Represents a model and view returned by a handler, to be resolved
+ * by a DispatcherServlet. The view can take the form of a String
+ * view name which will need to be resolved by a ViewResolver object;
+ * alternatively a View object can be specified directly. The model
+ * is a Map, allowing the use of multiple objects keyed by name.
+
+4. Таким образом можно добавить CSS стиль в html, добавляем его в head нужной страницы.
+
+   <#-- добавили CSS стиль для прогрес бара турболинкс-->
+        <style>
+            .turbolinks-progress-bar {
+                height: 5px;
+                background-color: navy;
+            }
+        </style>
+
+Или можно так:
+<#--использование стиля через ссылку на стиль в нашем файле -->
+<link rel="stylesheet" href="/static/style.css"/>
